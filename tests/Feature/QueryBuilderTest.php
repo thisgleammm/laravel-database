@@ -48,4 +48,101 @@ class QueryBuilderTest extends TestCase
             Log::info(json_encode($item));
         });
     }
+
+    public function insertCategories()
+    {
+        DB::table("categories")->insert([
+            'id' => 'SMARTPHONE',
+            'name' => 'Smartphone',
+            'created_at' => now(),
+        ]);
+
+        DB::table("categories")->insert([
+            'id' => 'LAPTOP',
+            'name' => 'Laptop',
+            'created_at' => now(),
+        ]);
+        DB::table("categories")->insert([
+            'id' => 'FASHION',
+            'name' => 'Fashion',
+            'created_at' => now(),
+        ]);
+
+        DB::table("categories")->insert([
+            'id' => 'BEAUTY',
+            'name' => 'Beauty',
+            'created_at' => now(),
+        ]);
+    }
+
+    public function testWhere()
+    {
+        $this->insertCategories();
+
+        $collection = DB::table("categories")->where(function ($builder) {
+            $builder->where("id", "=", "SMARTPHONE");
+            $builder->orWhere("id", "=", "LAPTOP");
+            // SELECT * FROM categories WHERE (id = 'SMARTPHONE' AND id = 'LAPTOP')
+        })->get();
+
+        self::assertCount(2, $collection);
+        $collection->each(function ($item) {
+            Log::info(json_encode($item));
+        });
+    }
+
+    public function testWhereBetweenMethod()
+    {
+        $this->insertCategories();
+
+        $collection = DB::table("categories")
+            ->whereBetween("id", ["BEAUTY", "SMARTPHONE"])
+            ->get();
+
+        self::assertCount(4, $collection);
+        $collection->each(function ($item) {
+            Log::info(json_encode($item));
+        });
+    }
+
+    public function testWhereInMethod()
+    {
+        $this->insertCategories();
+
+        $collection = DB::table("categories")
+            ->whereIn("id", ["SMARTPHONE", "LAPTOP"])
+            ->get();
+
+        self::assertCount(2, $collection);
+        $collection->each(function ($item) {
+            Log::info(json_encode($item));
+        });
+    }
+    public function testWhereNullMethod()
+    {
+        $this->insertCategories();
+
+        $collection = DB::table("categories")
+            ->whereNull("description")
+            ->get();
+
+        self::assertCount(4, $collection);
+        $collection->each(function ($item) {
+            Log::info(json_encode($item));
+        });
+    }
+
+    public function testWhereDateMethod()
+    {
+        $this->insertCategories();
+
+        $collection = DB::table("categories")
+            ->whereDate("created_at", "2026-01-25")
+            ->get();
+
+        self::assertCount(4, $collection);
+        $collection->each(function ($item) {
+            Log::info(json_encode($item));
+        });
+    }
 }
