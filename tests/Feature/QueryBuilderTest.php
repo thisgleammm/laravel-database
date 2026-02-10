@@ -137,7 +137,7 @@ class QueryBuilderTest extends TestCase
         $this->insertCategories();
 
         $collection = DB::table("categories")
-            ->whereDate("created_at", "2026-01-25")
+            ->whereDate("created_at", \Illuminate\Support\Carbon::now()->toDateString())
             ->get();
 
         self::assertCount(4, $collection);
@@ -222,5 +222,38 @@ class QueryBuilderTest extends TestCase
             ->get();
 
         self::assertCount(0, $collection);
+    }
+
+    public function insertProducts()
+    {
+        $this->insertCategories();
+
+        DB::table("products")->insert([
+            "id" => "1",
+            "name" => "Iphone 21",
+            "description" => "Smartphone",
+            "price" => 9909,
+            "category_id" => "SMARTPHONE",
+        ]);
+        DB::table("products")->insert([
+            "id" => "2",
+            "name" => "Iphone 20",
+            "price" => 12319,
+            "category_id" => "SMARTPHONE",
+        ]);
+    }
+
+    public function testQueryBuilderJoin() {
+        $this->insertProducts();
+
+        $collection = DB::table("products")
+            ->join("categories", "products.category_id", "=", "categories.id")
+            ->select("products.id", "products.name", "categories.name as category_name", "products.price")
+            ->get();
+
+        self::assertCount(2, $collection);
+        for ($i = 0; $i < count($collection); $i++) {
+            Log::info(json_encode($collection[$i]));
+        }
     }
 }
