@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\CategorySeeder;
+use Database\Seeders\CounterSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
@@ -52,28 +54,7 @@ class QueryBuilderTest extends TestCase
 
     public function insertCategories()
     {
-        DB::table("categories")->insert([
-            'id' => 'SMARTPHONE',
-            'name' => 'Smartphone',
-            'created_at' => now(),
-        ]);
-
-        DB::table("categories")->insert([
-            'id' => 'LAPTOP',
-            'name' => 'Laptop',
-            'created_at' => now(),
-        ]);
-        DB::table("categories")->insert([
-            'id' => 'FASHION',
-            'name' => 'Fashion',
-            'created_at' => now(),
-        ]);
-
-        DB::table("categories")->insert([
-            'id' => 'BEAUTY',
-            'name' => 'Beauty',
-            'created_at' => now(),
-        ]);
+        $this->seed(CategorySeeder::class);
     }
 
     public function testWhere()
@@ -138,7 +119,7 @@ class QueryBuilderTest extends TestCase
         $this->insertCategories();
 
         $collection = DB::table("categories")
-            ->whereDate("created_at", \Illuminate\Support\Carbon::now()->toDateString())
+            ->whereDate("created_at", "2020-10-10")
             ->get();
 
         self::assertCount(4, $collection);
@@ -389,12 +370,6 @@ class QueryBuilderTest extends TestCase
     }
 
     public function insertProductFood(){
-        DB::table("categories")->insert([
-            "id" => "FOOD",
-            "name" => "Food",
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
 
         DB::table("products")->insert([
             "id" => "3",
@@ -501,6 +476,7 @@ class QueryBuilderTest extends TestCase
                 break;
             }
         }
-
     }
+
+
 }
