@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string("id")->nullable(false)->primary();
             $table->string("name")->nullable(false);
             $table->string("description")->nullable(true);
-            $table->string("price")->nullable(false);
+            $table->integer("price")->nullable(false)->default(0);
             $table->string("category_id", 100)->nullable(false);
             $table->foreign("category_id")->references("id")->on("categories");
             $table->timestamps();
