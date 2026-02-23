@@ -372,4 +372,19 @@ class QueryBuilderTest extends TestCase
         self::assertEquals(22228, $result);
         
     }
+
+    public function testQueryBuilderRaw() {
+        $this->insertProducts();
+
+        $collection = DB::table("products")
+            ->select(
+                DB::raw("count(*) as total"), 
+                DB::raw("min(price) as min_price"), 
+                DB::raw("max(price) as max_price"))
+            ->get();
+
+        self::assertEquals(2, $collection[0]->total);
+        self::assertEquals(9909, $collection[0]->min_price);
+        self::assertEquals(12319, $collection[0]->max_price);
+    }
 }
