@@ -387,4 +387,45 @@ class QueryBuilderTest extends TestCase
         self::assertEquals(9909, $collection[0]->min_price);
         self::assertEquals(12319, $collection[0]->max_price);
     }
+
+    public function insertProductFood(){
+        DB::table("categories")->insert([
+            "id" => "FOOD",
+            "name" => "Food",
+            "created_at" => now(),
+            "updated_at" => now(),
+        ]);
+
+        DB::table("products")->insert([
+            "id" => "3",
+            "name" => "Nasi Goreng",
+            "description" => "Makanan",
+            "price" => 10000,
+            "category_id" => "FOOD",
+        ]);
+        DB::table("products")->insert([
+            "id" => "4",
+            "name" => "Mie Ayam",
+            "description" => "Makanan",
+            "price" => 15000,
+            "category_id" => "FOOD",
+        ]);
+    }
+
+    public function testQueryBuilderGrouping() {
+        $this->insertProducts();
+        $this->insertProductFood();
+
+        $collection = DB::table("products")
+            ->select("category_id", DB::raw("count(*) as total"))
+            ->groupBy("category_id")
+            ->groupBy("category_id", "desc")
+            ->get();
+
+        self::assertCount(2, $collection);
+        self::assertEquals("FOOD", $collection[0]->category_id);
+        self::assertEquals(2, $collection[0]->total);
+        self::assertEquals("SMARTPHONE", $collection[1]->category_id);
+        self::assertEquals(2, $collection[1]->total);
+    }
 }
